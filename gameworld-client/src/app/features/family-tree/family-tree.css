@@ -1,0 +1,170 @@
+.tree-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #2c3e50, #3498db);
+  font-family: 'Outfit', 'Inter', sans-serif;
+  color: white;
+  padding: 40px;
+  overflow-x: auto;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+  width: 100%;
+  max-width: 600px;
+}
+
+.header h1 {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.stage-tracker {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 20px;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+}
+
+.stage-bar {
+  height: 10px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.progress {
+  height: 100%;
+  background: linear-gradient(90deg, #1dd1a1, #feca57);
+  transition: width 0.5s ease;
+}
+
+.stage-text {
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.victory-message {
+  margin-top: 20px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #f1c40f;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Tree Structure */
+.tree-root {
+  display: flex;
+  justify-content: center;
+}
+
+.node-wrapper {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  position: relative;
+}
+
+.parents-container {
+  display: flex;
+  gap: 20px;
+  padding-bottom: 20px;
+  position: relative;
+}
+
+/* Connectors */
+.parents-container::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 25%;
+  right: 25%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.parents-container .node-wrapper::before {
+  content: '';
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  width: 2px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.member-card {
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  position: relative;
+  width: 150px;
+  margin-top: 20px;
+}
+
+.member-card::after {
+  content: '';
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  width: 2px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.root-node > .member-card::after {
+  display: none;
+}
+
+.gen-label {
+  font-size: 0.8rem;
+  color: #7f8c8d;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.member-card input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 1rem;
+}
+
+.add-btn {
+  margin-top: 10px;
+  background: #3498db;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background 0.2s;
+}
+
+.add-btn:hover {
+  background: #2980b9;
+}
+
+/* Generation Colors */
+.gen-1 { border-top: 4px solid #e74c3c; }
+.gen-2 { border-top: 4px solid #f39c12; }
+.gen-3 { border-top: 4px solid #2ecc71; }
+.gen-4 { border-top: 4px solid #3498db; }
+.gen-5 { border-top: 4px solid #9b59b6; }

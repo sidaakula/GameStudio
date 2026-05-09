@@ -1,0 +1,53 @@
+<div class="tree-container">
+  <div class="header">
+    <h1>Family Tree Quest</h1>
+    <div class="stage-tracker">
+      <div class="stage-bar">
+        <div class="progress" [style.width.%]="(currentStage / 4) * 100"></div>
+      </div>
+      <div class="stage-text">Current Stage: {{ currentStage }} / 4</div>
+    </div>
+    
+    @if (currentStage === 4) {
+      <div class="victory-message">
+        🎉 Incredible! You've unlocked all generations! 🎉
+      </div>
+    }
+  </div>
+
+  <!-- Recursive template for the tree -->
+  <ng-template #treeNode let-member="member" let-level="level">
+    <div class="node-wrapper" [class.root-node]="level === 1">
+      
+      <!-- The person card -->
+      <div class="member-card" [ngClass]="'gen-' + level">
+        <div class="gen-label">Gen {{ level }}</div>
+        <input 
+          type="text" 
+          [(ngModel)]="member.name" 
+          (ngModelChange)="updateStage()"
+          placeholder="Enter name..." 
+        />
+        @if (level < 5) {
+          <button class="add-btn" (click)="addParent(member.id, level + 1)" *ngIf="!hasParents(member.id)">
+            + Add Parents
+          </button>
+        }
+      </div>
+
+      <!-- Parents line/wrapper -->
+      @if (hasParents(member.id)) {
+        <div class="parents-container">
+          @for (parent of getParents(member.id); track parent.id) {
+            <ng-container *ngTemplateOutlet="treeNode; context: { member: parent, level: level + 1 }"></ng-container>
+          }
+        </div>
+      }
+    </div>
+  </ng-template>
+
+  <!-- Start the tree with the root member -->
+  <div class="tree-root">
+    <ng-container *ngTemplateOutlet="treeNode; context: { member: members[0], level: 1 }"></ng-container>
+  </div>
+</div>

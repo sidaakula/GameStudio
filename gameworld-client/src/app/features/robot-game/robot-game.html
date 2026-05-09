@@ -1,0 +1,42 @@
+<div class="game-container">
+  <div class="header">
+    <h1>Catch the Falling Robots!</h1>
+    <div class="stats">
+      <div class="score">Score: {{ score }}</div>
+      <div class="time">Time: {{ timeLeft }}s</div>
+    </div>
+  </div>
+
+  <div class="video-container" #videoContainer>
+    <!-- Mirrored video for natural interaction -->
+    <video #webcam autoplay playsinline class="webcam"></video>
+    <!-- Canvas for game graphics overlaid on top of video -->
+    <canvas #gameCanvas class="game-canvas"></canvas>
+    
+    <!-- UI Overlays -->
+    @if (gameState === 'start') {
+      <div class="overlay">
+        <h2>Ready to play?</h2>
+        <p>Catch the falling robot parts with your hands!</p>
+        <button class="start-btn" (click)="startGame()">Start Game</button>
+      </div>
+    }
+    
+    @if (gameState === 'countdown') {
+      <div class="overlay countdown">
+        <h1>{{ countdownValue }}</h1>
+      </div>
+    }
+
+    @if (gameState === 'gameover') {
+      <div class="overlay gameover">
+        <h2>Time's Up!</h2>
+        <p>Final Score: {{ score }}</p>
+        <div class="name-entry">
+          <input type="text" #playerNameInput placeholder="Enter your name" />
+          <button (click)="submitScore(playerNameInput.value)">Submit Score</button>
+        </div>
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,58 @@
+<div class="hub-container">
+  <div class="neon-sign">
+    <h1>Welcome to Game World</h1>
+    <p>Choose an adventure!</p>
+  </div>
+
+  <div class="games-grid">
+    <!-- Catch The Robots -->
+    <a routerLink="/robot-game" class="game-card robot-card">
+      <div class="card-content">
+        <h2>Catch the Robots</h2>
+        <p>Use your webcam to catch falling parts!</p>
+      </div>
+    </a>
+
+    <!-- Family Tree -->
+    <a routerLink="/family-tree" class="game-card tree-card">
+      <div class="card-content">
+        <h2>Family Tree Quest</h2>
+        <p>Unlock generations to reach the final stage.</p>
+      </div>
+    </a>
+
+    <!-- Road Safety Quiz -->
+    <a routerLink="/road-safety-quiz" class="game-card quiz-card">
+      <div class="card-content">
+        <h2>Road Safety Quiz</h2>
+        <p>Test your knowledge and stay safe!</p>
+      </div>
+    </a>
+  </div>
+
+  <div class="leaderboards">
+    <div class="leaderboard-panel">
+      <h3>🏆 Catch the Robots High Scores</h3>
+      <ul>
+        @for (score of robotScores; track score.id; let i = $index) {
+          <li><span class="rank">#{{ i + 1 }}</span> {{ score.playerName }} - <span class="points">{{ score.score }} pts</span></li>
+        }
+        @if (robotScores.length === 0) {
+          <li class="empty-state">No scores yet. Be the first!</li>
+        }
+      </ul>
+    </div>
+
+    <div class="leaderboard-panel">
+      <h3>🏆 Road Safety Quiz High Scores</h3>
+      <ul>
+        @for (score of quizScores; track score.id; let i = $index) {
+          <li><span class="rank">#{{ i + 1 }}</span> {{ score.playerName }} - <span class="points">{{ score.score }} pts</span></li>
+        }
+        @if (quizScores.length === 0) {
+          <li class="empty-state">No scores yet. Be the first!</li>
+        }
+      </ul>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,54 @@
+<div class="quiz-container">
+  <div class="header">
+    <h1>Road Safety Quiz</h1>
+    <div class="score-display">Score: {{ score }} / 100</div>
+  </div>
+
+  @if (gameState === 'start') {
+    <div class="start-screen">
+      <h2>Test your Road Safety Knowledge!</h2>
+      <p>Answer 10 questions to climb the leaderboard.</p>
+      <button class="action-btn" (click)="startGame()">Start Quiz</button>
+    </div>
+  }
+
+  @if (gameState === 'playing') {
+    <div class="quiz-card">
+      <div class="question-tracker">Question {{ currentQuestionIndex + 1 }} of {{ questions.length }}</div>
+      <h2 class="question-text">{{ questions[currentQuestionIndex].text }}</h2>
+      
+      <div class="options-grid">
+        @for (option of questions[currentQuestionIndex].options; track option; let i = $index) {
+          <button 
+            class="option-btn"
+            [class.selected]="selectedOptionIndex === i"
+            [class.correct]="showAnswer && i === questions[currentQuestionIndex].correctIndex"
+            [class.incorrect]="showAnswer && selectedOptionIndex === i && i !== questions[currentQuestionIndex].correctIndex"
+            (click)="selectOption(i)"
+            [disabled]="showAnswer"
+          >
+            {{ option }}
+          </button>
+        }
+      </div>
+
+      @if (showAnswer) {
+        <div class="feedback" [class.feedback-correct]="selectedOptionIndex === questions[currentQuestionIndex].correctIndex">
+          {{ selectedOptionIndex === questions[currentQuestionIndex].correctIndex ? 'Correct! +10 Points' : 'Incorrect!' }}
+        </div>
+      }
+    </div>
+  }
+
+  @if (gameState === 'gameover') {
+    <div class="end-screen">
+      <h2>Quiz Complete!</h2>
+      <div class="final-score">Your Score: {{ score }}</div>
+      
+      <div class="name-entry">
+        <input type="text" #playerNameInput placeholder="Enter your name" />
+        <button class="action-btn" (click)="submitScore(playerNameInput.value)">Submit Score</button>
+      </div>
+    </div>
+  }
+</div>
