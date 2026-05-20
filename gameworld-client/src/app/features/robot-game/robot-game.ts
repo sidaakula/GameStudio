@@ -1,5 +1,7 @@
-import { Component, ElementRef, OnInit, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, AfterViewInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { UserService } from '../../shared/user.service';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { HandLandmarker, FilesetResolver } from '@mediapipe/tasks-vision';
 
 interface FallingObject {
@@ -14,7 +16,7 @@ interface FallingObject {
 @Component({
   selector: 'app-robot-game',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './robot-game.html',
   styleUrls: ['./robot-game.css']
 })
@@ -26,14 +28,17 @@ export class RobotGame implements AfterViewInit, OnDestroy {
   score = 0;
   timeLeft = 45;
   countdownValue = 3;
+  errorMessage: string = '';
   
   private handLandmarker!: HandLandmarker;
-  private webcamRunning = false;
+  webcamRunning = false;
   private canvasCtx!: CanvasRenderingContext2D;
   private fallingObjects: FallingObject[] = [];
   private animationFrameId: number = 0;
   private timerInterval: any;
   private lastVideoTime = -1;
+
+  constructor(private cdr: ChangeDetectorRef, private userService: UserService) {}
 
   async ngAfterViewInit() {
     this.canvasCtx = this.canvasElement.nativeElement.getContext('2d')!;
@@ -72,14 +77,30 @@ export class RobotGame implements AfterViewInit, OnDestroy {
         this.webcamRunning = true;
         this.canvasElement.nativeElement.width = video.videoWidth;
         this.canvasElement.nativeElement.height = video.videoHeight;
+        this.cdr.detectChanges();
         this.predictWebcam();
       });
-    } catch (err) {
+      // Fallback in case loadeddata already fired or doesn't fire
+      if (video.readyState >= 2) {
+        this.webcamRunning = true;
+        this.canvasElement.nativeElement.width = video.videoWidth;
+        this.canvasElement.nativeElement.height = video.videoHeight;
+        this.cdr.detectChanges();
+        this.predictWebcam();
+      }
+    } catch (err: any) {
       console.error("Error accessing webcam:", err);
+      this.errorMessage = "Error accessing webcam: " + (err.message || err);
     }
   }
 
   startGame() {
+    if (!this.webcamRunning) {
+      this.errorMessage = "Please allow webcam access and wait for it to load before starting.";
+      return;
+    }
+    
+    this.errorMessage = '';
     this.gameState = 'countdown';
     this.score = 0;
     this.timeLeft = 45;
@@ -88,6 +109,7 @@ export class RobotGame implements AfterViewInit, OnDestroy {
     
     const countInterval = setInterval(() => {
       this.countdownValue--;
+      this.cdr.detectChanges();
       if (this.countdownValue === 0) {
         clearInterval(countInterval);
         this.gameState = 'playing';
@@ -99,6 +121,7 @@ export class RobotGame implements AfterViewInit, OnDestroy {
   startTimer() {
     this.timerInterval = setInterval(() => {
       this.timeLeft--;
+      this.cdr.detectChanges();
       if (this.timeLeft <= 0) {
         this.endGame();
       }
@@ -108,6 +131,7 @@ export class RobotGame implements AfterViewInit, OnDestroy {
   endGame() {
     clearInterval(this.timerInterval);
     this.gameState = 'gameover';
+    this.submitScore();
   }
 
   stopGame() {
@@ -233,7 +257,8 @@ export class RobotGame implements AfterViewInit, OnDestroy {
     oscillator.stop(audioCtx.currentTime + 0.1);
   }
 
-  async submitScore(playerName: string) {
+  async submitScore() {
+    const playerName = this.userService.getUsername();
     if (!playerName) return;
     
     try {
@@ -246,11 +271,9 @@ export class RobotGame implements AfterViewInit, OnDestroy {
           score: this.score
         })
       });
-      this.gameState = 'start';
+      // Optionally return to start or stay on gameover
     } catch (err) {
       console.error('Failed to submit score', err);
-      // Fallback: Just return to start screen if API is down
-      this.gameState = 'start';
     }
   }
 }

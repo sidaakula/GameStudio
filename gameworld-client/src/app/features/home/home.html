@@ -1,10 +1,22 @@
 <div class="hub-container">
   <div class="neon-sign">
     <h1>Welcome to Game World</h1>
-    <p>Choose an adventure!</p>
+    <p *ngIf="!userService.isLoggedIn()">Enter your username to begin.</p>
+    <div *ngIf="userService.isLoggedIn()" class="user-greeting">
+      <p>Welcome, {{ userService.getUsername() }}!</p>
+      <button class="logout-btn" (click)="logout()">Change Name</button>
+    </div>
   </div>
 
-  <div class="games-grid">
+  <div *ngIf="!userService.isLoggedIn()" class="login-section">
+    <div class="login-card">
+      <h2>Player Registration</h2>
+      <input type="text" [(ngModel)]="usernameInput" placeholder="Enter Username..." (keyup.enter)="login()">
+      <button class="login-btn" (click)="login()" [disabled]="!usernameInput.trim()">ENTER WORLD</button>
+    </div>
+  </div>
+
+  <div *ngIf="userService.isLoggedIn()" class="games-grid">
     <!-- Catch The Robots -->
     <a routerLink="/robot-game" class="game-card robot-card">
       <div class="card-content">
@@ -28,9 +40,75 @@
         <p>Test your knowledge and stay safe!</p>
       </div>
     </a>
+
+    <!-- Mainframe Override -->
+    <a routerLink="/mainframe-override" class="game-card mainframe-card">
+      <div class="card-content">
+        <h2>The Mainframe Override</h2>
+        <p>Defeat the Rogue AI in 60 seconds.</p>
+      </div>
+    </a>
+
+    <!-- Trivia AI -->
+    <a routerLink="/trivia" class="game-card trivia-card">
+      <div class="card-content">
+        <h2>Trivia AI</h2>
+        <p>Answer 10 custom age-calibrated questions in 60s.</p>
+      </div>
+    </a>
   </div>
 
-  <div class="leaderboards">
+  <div *ngIf="userService.isLoggedIn()" class="leaderboards">
+    <!-- Global Championship Leaderboard -->
+    <div class="leaderboard-panel championship-panel">
+      <div class="championship-header">
+        <h3>👑 GLOBAL CHAMPIONSHIP LEADERBOARD</h3>
+        <p class="championship-subtitle">Consolidated high scores across all GameWorld zones</p>
+      </div>
+      <div class="table-responsive">
+        <table class="championship-table">
+          <thead>
+            <tr>
+              <th class="col-rank">Rank</th>
+              <th class="col-player">Player</th>
+              <th class="col-game">🤖 Robots</th>
+              <th class="col-game">🚦 Safety</th>
+              <th class="col-game">🌳 Family</th>
+              <th class="col-game">💻 Mainframe</th>
+              <th class="col-game">⚡ Trivia AI</th>
+              <th class="col-total">🏆 Total Score</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of commonScores; track row.playerName; let i = $index) {
+              <tr [class.current-player]="row.playerName.toLowerCase() === getCurrentUsername().toLowerCase()">
+                <td class="col-rank">
+                  <span class="rank-badge" [class.rank-1]="i === 0" [class.rank-2]="i === 1" [class.rank-3]="i === 2">
+                    {{ i === 0 ? '🏆' : i === 1 ? '🥈' : i === 2 ? '🥉' : '#' + (i + 1) }}
+                  </span>
+                </td>
+                <td class="col-player">
+                  <span class="player-name">{{ row.playerName }}</span>
+                  <span *ngIf="row.playerName.toLowerCase() === getCurrentUsername().toLowerCase()" class="you-badge">YOU</span>
+                </td>
+                <td class="col-game score-value" [class.zero-score]="row.catchTheRobots === 0">{{ row.catchTheRobots }}</td>
+                <td class="col-game score-value" [class.zero-score]="row.roadSafetyQuiz === 0">{{ row.roadSafetyQuiz }}</td>
+                <td class="col-game score-value" [class.zero-score]="row.familyTreeQuest === 0">{{ row.familyTreeQuest }}</td>
+                <td class="col-game score-value" [class.zero-score]="row.mainframeOverride === 0">{{ row.mainframeOverride }}</td>
+                <td class="col-game score-value" [class.zero-score]="row.triviaAI === 0">{{ row.triviaAI }}</td>
+                <td class="col-total total-value">{{ row.totalScore }} pts</td>
+              </tr>
+            }
+            @if (commonScores.length === 0) {
+              <tr>
+                <td colspan="8" class="empty-table-state">No championship scores recorded yet. Play a game to rank up!</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
     <div class="leaderboard-panel">
       <h3>🏆 Catch the Robots High Scores</h3>
       <ul>
@@ -50,6 +128,42 @@
           <li><span class="rank">#{{ i + 1 }}</span> {{ score.playerName }} - <span class="points">{{ score.score }} pts</span></li>
         }
         @if (quizScores.length === 0) {
+          <li class="empty-state">No scores yet. Be the first!</li>
+        }
+      </ul>
+    </div>
+
+    <div class="leaderboard-panel">
+      <h3>🏆 Family Tree Quest High Scores</h3>
+      <ul>
+        @for (score of treeScores; track score.id; let i = $index) {
+          <li><span class="rank">#{{ i + 1 }}</span> {{ score.playerName }} - <span class="points">{{ score.score }} pts</span></li>
+        }
+        @if (treeScores.length === 0) {
+          <li class="empty-state">No scores yet. Be the first!</li>
+        }
+      </ul>
+    </div>
+
+    <div class="leaderboard-panel">
+      <h3>🏆 Mainframe Override High Scores</h3>
+      <ul>
+        @for (score of mainframeScores; track score.id; let i = $index) {
+          <li><span class="rank">#{{ i + 1 }}</span> {{ score.playerName }} - <span class="points">{{ score.score }} pts</span></li>
+        }
+        @if (mainframeScores.length === 0) {
+          <li class="empty-state">No scores yet. Be the first!</li>
+        }
+      </ul>
+    </div>
+
+    <div class="leaderboard-panel">
+      <h3>🏆 Trivia AI High Scores</h3>
+      <ul>
+        @for (score of triviaScores; track score.id; let i = $index) {
+          <li><span class="rank">#{{ i + 1 }}</span> {{ score.playerName }} - <span class="points">{{ score.score }} pts</span></li>
+        }
+        @if (triviaScores.length === 0) {
           <li class="empty-state">No scores yet. Be the first!</li>
         }
       </ul>

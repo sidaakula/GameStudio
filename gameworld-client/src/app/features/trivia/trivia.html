@@ -1,0 +1,201 @@
+<div class="trivia-container">
+  <!-- START SCREEN -->
+  <div *ngIf="gameState === 'start'" class="panel start-panel">
+    <div class="header-box">
+      <h1 class="neon-title">Trivia AI</h1>
+      <p class="subtitle">Get 10 correct answers in 60 seconds!</p>
+    </div>
+
+    <!-- AGE SELECTION -->
+    <div class="input-section">
+      <label for="player-age" class="input-label">Enter Your Age</label>
+      <div class="age-input-wrapper">
+        <input 
+          id="player-age"
+          type="number" 
+          [(ngModel)]="ageInput" 
+          (ngModelChange)="onAgeChange()"
+          min="1" 
+          max="120" 
+          class="age-input"
+          placeholder="Age..."
+        />
+        <span class="age-suffix">years old</span>
+      </div>
+    </div>
+
+    <!-- TOPIC SELECTION -->
+    <div class="topic-section">
+      <h3 class="section-title">Choose Your Trivia Topic</h3>
+      <div class="topic-grid">
+        <div 
+          *ngFor="let topic of topics" 
+          class="topic-card" 
+          [class.active]="selectedTopic === topic.id"
+          (click)="selectTopic(topic.id)"
+        >
+          <div class="topic-icon">{{ topic.icon }}</div>
+          <div class="topic-info">
+            <h4 class="topic-name">{{ topic.name }}</h4>
+            <p class="topic-desc">{{ topic.desc }}</p>
+          </div>
+          <div class="select-indicator"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLAY BUTTON -->
+    <div class="action-section">
+      <button class="btn btn-primary btn-start" (click)="startGame()">
+        START CHALLENGE
+      </button>
+      <a routerLink="/home" class="btn btn-secondary btn-back">RETURN TO HUB</a>
+    </div>
+  </div>
+
+  <!-- LOADING SCREEN -->
+  <div *ngIf="gameState === 'loading'" class="panel loading-panel">
+    <div class="spinner-box">
+      <div class="neon-spinner"></div>
+      <p class="loading-text">Generating customized questions for age {{ ageInput }}...</p>
+      <span class="sub-loading">Configuring fallback parameters and loading topics...</span>
+    </div>
+  </div>
+
+  <!-- GAMEPLAY SCREEN -->
+  <div *ngIf="gameState === 'playing'" class="panel game-panel">
+    <!-- TOP STATS BAR -->
+    <div class="stats-bar">
+      <div class="stat-box">
+        <span class="label">QUESTION</span>
+        <span class="value">#{{ currentQuestionIndex + 1 }}</span>
+      </div>
+
+      <div class="stat-box">
+        <span class="label">SCORE</span>
+        <span class="value highlight">{{ score }}</span>
+      </div>
+
+      <div class="stat-box">
+        <span class="label">CORRECT</span>
+        <span class="value correct-val">{{ correctCount }}<span class="max">/10</span></span>
+      </div>
+    </div>
+
+    <!-- TIMER BAR -->
+    <div class="timer-container">
+      <div class="timer-bar-wrapper">
+        <div 
+          class="timer-bar-fill" 
+          [style.width.%]="(timeLeft / 60) * 100"
+          [class.warning]="timeLeft <= 15"
+          [class.critical]="timeLeft <= 5"
+        ></div>
+      </div>
+      <div class="timer-text" [class.pulse]="timeLeft <= 15">
+        ⏳ {{ timeLeft }}s
+      </div>
+    </div>
+
+    <!-- QUESTION CARD -->
+    <div class="question-card" *ngIf="questions.length > 0">
+      <div class="question-header">
+        <span class="question-topic-badge">⚡ {{ selectedTopic | uppercase }}</span>
+        <div class="audio-controls">
+          <button class="audio-btn" (click)="toggleSound()" [title]="isSoundEnabled ? 'Mute Speech' : 'Unmute Speech'">
+            {{ isSoundEnabled ? '🔊' : '🔇' }}
+          </button>
+          <button class="audio-btn" (click)="speakCurrentQuestion()" title="Replay Question" [disabled]="!isSoundEnabled">
+            🗣️
+          </button>
+        </div>
+      </div>
+      <h2 class="question-text">{{ questions[currentQuestionIndex].question }}</h2>
+      
+      <!-- OPTIONS LIST -->
+      <div class="options-grid">
+        <button 
+          *ngFor="let option of questions[currentQuestionIndex].options"
+          class="option-btn"
+          [class.selected]="selectedOption === option"
+          [class.correct]="showAnswer && option === questions[currentQuestionIndex].answer"
+          [class.incorrect]="showAnswer && selectedOption === option && option !== questions[currentQuestionIndex].answer"
+          [disabled]="showAnswer"
+          (click)="selectOption(option)"
+        >
+          <span class="option-label"></span>
+          <span class="option-text">{{ option }}</span>
+        </button>
+      </div>
+
+      <!-- FEEDBACK DISPLAY -->
+      <div class="feedback-banner" *ngIf="feedbackMessage" [ngClass]="feedbackType">
+        {{ feedbackMessage }}
+      </div>
+
+      <!-- HINT BUTTON & REVEAL -->
+      <div class="hint-wrapper">
+        <button class="hint-toggle-btn" (click)="toggleHint()">
+          💡 {{ showHint ? 'Hide Hint' : 'Reveal Hint' }}
+        </button>
+        <div class="hint-box" *ngIf="showHint">
+          <p class="hint-text">{{ questions[currentQuestionIndex].hint }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GAME OVER / RESULTS SCREEN -->
+  <div *ngIf="gameState === 'gameover'" class="panel gameover-panel">
+    <!-- WIN / LOSS STYLING -->
+    <div class="victory-header" [class.won]="correctCount >= 10">
+      <div class="trophy-emoji">{{ correctCount >= 10 ? '🏆' : '🎮' }}</div>
+      <h1 class="gameover-title">
+        {{ correctCount >= 10 ? 'CHALLENGE COMPLETE!' : 'TIME\'S UP!' }}
+      </h1>
+      <p class="gameover-subtitle">
+        {{ correctCount >= 10 ? 'Outstanding! You correctly answered 10 questions.' : 'Keep practicing to master this category!' }}
+      </p>
+    </div>
+
+    <!-- GAME OVER STATS -->
+    <div class="results-stats">
+      <div class="stat-card">
+        <span class="stat-lbl">Final Score</span>
+        <span class="stat-val highlight">{{ score }}</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-lbl">Correct Answers</span>
+        <span class="stat-val correct-val">{{ correctCount }} / 10</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-lbl">Time Remaining</span>
+        <span class="stat-val">{{ timeLeft }} seconds</span>
+      </div>
+    </div>
+
+    <!-- LEADERBOARD STATUS -->
+    <div class="leaderboard-status" *ngIf="userService.isLoggedIn()">
+      <div class="status-icon">🚀</div>
+      <div class="status-msg">
+        <p class="status-bold">Saving Score to Leaderboard...</p>
+        <span class="status-sub" *ngIf="isSubmitting">Transmitting score telemetry...</span>
+        <span class="status-sub success-txt" *ngIf="!isSubmitting">Score recorded under player: <strong>{{ userService.getUsername() }}</strong></span>
+      </div>
+    </div>
+
+    <div class="leaderboard-status warning" *ngIf="!userService.isLoggedIn()">
+      <div class="status-icon">⚠️</div>
+      <div class="status-msg">
+        <p class="status-bold">Scores not recorded</p>
+        <span class="status-sub">Please register on the main page to enter the leaderboards.</span>
+      </div>
+    </div>
+
+    <!-- ACTION BUTTONS -->
+    <div class="action-section">
+      <button class="btn btn-primary btn-retry" (click)="startGame()">PLAY AGAIN</button>
+      <a routerLink="/home" class="btn btn-secondary btn-hub">RETURN TO HUB</a>
+    </div>
+  </div>
+</div>

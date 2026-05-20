@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
+import { UserService } from '../../shared/user.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 
 interface FamilyMember {
   id: string;
@@ -12,7 +14,7 @@ interface FamilyMember {
 @Component({
   selector: 'app-family-tree',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './family-tree.html',
   styleUrls: ['./family-tree.css']
 })
@@ -23,6 +25,10 @@ export class FamilyTree {
   
   currentStage = 0;
   maxGenerationEntered = 1;
+  isSubmitting = false;
+  submitMessage = '';
+
+  constructor(private userService: UserService, private cdr: ChangeDetectorRef) {}
 
   getMembersByGen(gen: number) {
     return this.members.filter(m => m.generation === gen);
@@ -61,5 +67,47 @@ export class FamilyTree {
 
   getParents(childId: string): FamilyMember[] {
     return this.members.filter(m => m.parentId === childId);
+  }
+
+  async submitScore() {
+    const playerName = this.userService.getUsername();
+    if (!playerName || this.isSubmitting) return;
+    
+    this.isSubmitting = true;
+    this.submitMessage = 'Submitting...';
+    this.cdr.detectChanges();
+    
+    // Score is 10 points per filled name
+    const filledNames = this.members.filter(m => m.name.trim() !== '').length;
+    const score = filledNames * 10;
+
+    try {
+      await fetch('/api/leaderboard', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          gameName: 'FamilyTreeQuest',
+          playerName: playerName,
+          score: score
+        })
+      });
+      this.submitMessage = `Submitted score: ${score}!`;
+      this.cdr.detectChanges();
+      setTimeout(() => {
+        this.submitMessage = '';
+        this.cdr.detectChanges();
+      }, 3000);
+    } catch (err) {
+      console.error('Failed to submit score', err);
+      this.submitMessage = 'Failed to submit score.';
+      this.cdr.detectChanges();
+      setTimeout(() => {
+        this.submitMessage = '';
+        this.cdr.detectChanges();
+      }, 3000);
+    } finally {
+      this.isSubmitting = false;
+      this.cdr.detectChanges();
+    }
   }
 }

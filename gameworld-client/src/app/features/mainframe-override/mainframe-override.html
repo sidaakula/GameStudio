@@ -1,0 +1,114 @@
+<div class="background-effect"></div>
+<div class="scanlines"></div>
+
+<div class="terminal-container">
+  @if (gameState === 'playing') {
+    <div class="game-stats">
+      <div class="mission-info">
+        MISSION: OVERRIDE SYSTEM [LAYER {{ currentRiddleIndex }} / {{ totalRiddles }}]
+      </div>
+      <div class="timer" [class.low]="timeLeft < 10">
+        00:{{ timeLeft < 10 ? '0' + timeLeft : timeLeft }}
+      </div>
+    </div>
+
+    <div class="ai-agent-view">
+      <div class="ai-avatar" [class.angry]="isRogueAngry">
+        <!-- AI face symbol will be here via CSS -->
+      </div>
+      <div class="ai-message" [class.warning]="isRogueAngry">
+        {{ currentQuestion }}
+      </div>
+
+      @if (visualizationType) {
+        <div class="visualization-container" [ngClass]="visualizationType">
+          @for (item of visualizationData; track $index) {
+            <div class="viz-item" [style.background-color]="visualizationType === 'colors' ? item : null">
+              {{ visualizationType !== 'colors' ? item : '' }}
+            </div>
+          }
+        </div>
+      }
+
+      @if (showHint) {
+        <div class="hint-text">
+          HINT: {{ currentHint }}
+        </div>
+      }
+    </div>
+
+    <div class="interaction-area">
+      <div class="input-group">
+        <button 
+          *ngIf="hasSpeechSupport"
+          class="voice-btn" 
+          [class.listening]="isListening"
+          (click)="toggleListening()"
+          [disabled]="isSubmitting || !isConnected"
+          title="Hold or click to speak">
+          🎙️
+        </button>
+        <input 
+          #answerInput
+          type="text" 
+          placeholder="ENTER OVERRIDE CODE..." 
+          [(ngModel)]="userAnswer"
+          (keyup.enter)="submitAnswer()"
+          [disabled]="isSubmitting || !isConnected"
+          autofocus>
+        <button class="override-btn" (click)="submitAnswer()" [disabled]="isSubmitting || !isConnected">
+          OVERRIDE
+        </button>
+      </div>
+      <div class="status-msg">{{ statusMessage }}</div>
+    </div>
+  }
+
+  @if (gameState === 'intro') {
+    <div class="overlay">
+      <div class="ai-avatar"></div>
+      <h2>ROGUE AI DETECTED</h2>
+      <p>System is being locked down. You have 60 seconds to solve the riddles and override the core.</p>
+      
+      <div class="age-prompt">
+        <label>TARGET AGE:</label>
+        <input type="number" [(ngModel)]="playerAge" min="3" max="100" class="age-input">
+      </div>
+      
+      <div style="display: flex; gap: 15px; justify-content: center; align-items: center; width: 100%; flex-wrap: wrap; margin-top: 15px;">
+        <button class="btn-primary" (click)="startGame()" [disabled]="isStarting || !isConnected" style="margin: 0;">START HACK</button>
+        <a routerLink="/home" class="btn-primary" style="background: #e74c3c; border-color: #c0392b; text-decoration: none; margin: 0; display: inline-flex; align-items: center; justify-content: center; font-weight: bold;">
+          RETURN TO HUB
+        </a>
+      </div>
+      <div class="status-msg">{{ statusMessage }}</div>
+    </div>
+  }
+
+  @if (gameState === 'victory') {
+    <div class="overlay victory">
+      <h2>SYSTEM SECURED</h2>
+      <p>The rogue AI has been purged.</p>
+      <div class="stats">Time Taken: {{ resultData.timeTaken }}s</div>
+      <div style="display: flex; gap: 15px; justify-content: center; align-items: center; width: 100%; flex-wrap: wrap; margin-top: 15px;">
+        <button class="btn-primary" (click)="resetGame()" style="margin: 0;">NEXT AGENT</button>
+        <a routerLink="/home" class="btn-primary" style="background: #e74c3c; border-color: #c0392b; text-decoration: none; margin: 0; display: inline-flex; align-items: center; justify-content: center; font-weight: bold;">
+          RETURN TO HUB
+        </a>
+      </div>
+    </div>
+  }
+
+  @if (gameState === 'failure') {
+    <div class="overlay failure">
+      <h2>ACCESS DENIED</h2>
+      <p>The mainframe has locked you out.</p>
+      <div style="display: flex; gap: 15px; justify-content: center; align-items: center; width: 100%; flex-wrap: wrap; margin-top: 15px;">
+        <button class="btn-primary" (click)="resetGame()" style="margin: 0;">RETRY</button>
+        <a routerLink="/home" class="btn-primary" style="background: #e74c3c; border-color: #c0392b; text-decoration: none; margin: 0; display: inline-flex; align-items: center; justify-content: center; font-weight: bold;">
+          RETURN TO HUB
+        </a>
+      </div>
+    </div>
+  }
+</div>

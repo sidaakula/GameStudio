@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
+import { UserService } from '../../shared/user.service';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 interface Question {
   text: string;
@@ -10,7 +12,7 @@ interface Question {
 @Component({
   selector: 'app-road-safety-quiz',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './road-safety-quiz.html',
   styleUrls: ['./road-safety-quiz.css']
 })
@@ -33,6 +35,8 @@ export class RoadSafetyQuiz {
   gameState: 'start' | 'playing' | 'gameover' = 'start';
   selectedOptionIndex: number | null = null;
   showAnswer = false;
+
+  constructor(private userService: UserService) {}
 
   startGame() {
     this.gameState = 'playing';
@@ -61,6 +65,7 @@ export class RoadSafetyQuiz {
     
     if (this.currentQuestionIndex >= this.questions.length) {
       this.gameState = 'gameover';
+      this.submitScore();
     }
   }
 
@@ -69,7 +74,8 @@ export class RoadSafetyQuiz {
     this.showAnswer = false;
   }
 
-  async submitScore(playerName: string) {
+  async submitScore() {
+    const playerName = this.userService.getUsername();
     if (!playerName) return;
     
     try {
@@ -82,10 +88,9 @@ export class RoadSafetyQuiz {
           score: this.score
         })
       });
-      this.gameState = 'start';
+      // Automatically return to start screen after short delay, or let user click play again
     } catch (err) {
       console.error('Failed to submit score', err);
-      this.gameState = 'start';
     }
   }
 }

@@ -1,6 +1,11 @@
 {
   "/api": {
-    "target": "https://localhost:5001",
+    "target": "http://localhost:5108",
     "secure": false
+  },
+  "/hubs": {
+    "target": "http://localhost:5108",
+    "secure": false,
+    "ws": true
   }
 }

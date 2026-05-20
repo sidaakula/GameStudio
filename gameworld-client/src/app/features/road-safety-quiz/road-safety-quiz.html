@@ -8,7 +8,12 @@
     <div class="start-screen">
       <h2>Test your Road Safety Knowledge!</h2>
       <p>Answer 10 questions to climb the leaderboard.</p>
-      <button class="action-btn" (click)="startGame()">Start Quiz</button>
+      <div style="display: flex; gap: 15px; justify-content: center; align-items: center; width: 100%; flex-wrap: wrap; margin-top: 20px;">
+        <button class="action-btn" (click)="startGame()" style="margin: 0;">Start Quiz</button>
+        <a routerLink="/home" class="action-btn" style="background: #e74c3c; text-decoration: none; margin: 0; display: inline-flex; align-items: center; justify-content: center; font-weight: bold; border: none; height: auto;">
+          RETURN TO HUB
+        </a>
+      </div>
     </div>
   }
 
@@ -46,8 +51,13 @@
       <div class="final-score">Your Score: {{ score }}</div>
       
       <div class="name-entry">
-        <input type="text" #playerNameInput placeholder="Enter your name" />
-        <button class="action-btn" (click)="submitScore(playerNameInput.value)">Submit Score</button>
+        <p>Score automatically submitted!</p>
+        <div style="display: flex; gap: 15px; justify-content: center; align-items: center; width: 100%; flex-wrap: wrap; margin-top: 15px;">
+          <button class="action-btn" (click)="startGame()" style="margin: 0;">Play Again</button>
+          <a routerLink="/home" class="action-btn" style="background: #e74c3c; text-decoration: none; margin: 0; display: inline-flex; align-items: center; justify-content: center; font-weight: bold; border: none; height: auto;">
+            RETURN TO HUB
+          </a>
+        </div>
       </div>
     </div>
   }

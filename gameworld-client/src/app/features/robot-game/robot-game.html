@@ -18,7 +18,19 @@
       <div class="overlay">
         <h2>Ready to play?</h2>
         <p>Catch the falling robot parts with your hands!</p>
-        <button class="start-btn" (click)="startGame()">Start Game</button>
+        @if (errorMessage) {
+          <div class="error-message" style="color: #ff6b6b; margin-bottom: 15px; padding: 10px; border: 1px solid #ff6b6b; border-radius: 5px; background: rgba(255,107,107,0.1);">
+            {{ errorMessage }}
+          </div>
+        }
+        <div style="display: flex; gap: 15px; justify-content: center; align-items: center; width: 100%; flex-wrap: wrap;">
+          <button class="start-btn" (click)="startGame()" [disabled]="!webcamRunning && !errorMessage" style="margin: 0;">
+            {{ (!webcamRunning && !errorMessage) ? 'Loading Webcam...' : 'Start Game' }}
+          </button>
+          <a routerLink="/home" class="start-btn" style="background: #e74c3c; text-decoration: none; margin: 0; display: inline-flex; align-items: center; justify-content: center; font-weight: bold;">
+            RETURN TO HUB
+          </a>
+        </div>
       </div>
     }
     
@@ -32,9 +44,14 @@
       <div class="overlay gameover">
         <h2>Time's Up!</h2>
         <p>Final Score: {{ score }}</p>
-        <div class="name-entry">
-          <input type="text" #playerNameInput placeholder="Enter your name" />
-          <button (click)="submitScore(playerNameInput.value)">Submit Score</button>
+        <div class="name-entry" style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
+          <p>Score automatically submitted!</p>
+          <div style="display: flex; gap: 15px; justify-content: center; align-items: center; width: 100%;">
+            <button (click)="startGame()" style="margin: 0; padding: 10px 20px; font-size: 1.1rem; border-radius: 8px; cursor: pointer;">Play Again</button>
+            <a routerLink="/home" style="margin: 0; padding: 10px 20px; font-size: 1.1rem; border-radius: 8px; cursor: pointer; background: #e74c3c; color: white; text-decoration: none; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; border: none;">
+              RETURN TO HUB
+            </a>
+          </div>
         </div>
       </div>
     }

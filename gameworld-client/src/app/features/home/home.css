@@ -79,6 +79,8 @@
 .robot-card::before { background: linear-gradient(45deg, #ff6b6b, #c0392b); }
 .tree-card::before { background: linear-gradient(45deg, #1dd1a1, #10ac84); }
 .quiz-card::before { background: linear-gradient(45deg, #feca57, #f39c12); }
+.mainframe-card::before { background: linear-gradient(45deg, #00ff41, #00801a); }
+.trivia-card::before { background: linear-gradient(45deg, #a55eea, #8854d0); }
 
 .game-card:hover {
   transform: translateY(-10px);
@@ -169,4 +171,274 @@
   color: #7f8c8d;
   font-style: italic;
   justify-content: center;
+}
+
+/* Login Styles */
+.user-greeting {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-top: -10px;
+}
+
+.logout-btn {
+  background: transparent;
+  border: 1px solid #f09;
+  color: #f09;
+  padding: 5px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.logout-btn:hover {
+  background: rgba(255, 0, 153, 0.2);
+}
+
+.login-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 50px;
+  width: 100%;
+}
+
+.login-card {
+  background: rgba(0, 0, 0, 0.6);
+  border: 2px solid #0ff;
+  border-radius: 15px;
+  padding: 40px;
+  text-align: center;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 400px;
+  width: 100%;
+}
+
+.login-card h2 {
+  color: #0ff;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.login-card input {
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 1.2rem;
+  outline: none;
+}
+
+.login-card input:focus {
+  border-color: #0ff;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+.login-btn {
+  background: #0ff;
+  color: #000;
+  border: none;
+  padding: 15px;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-transform: uppercase;
+}
+
+.login-btn:hover:not(:disabled) {
+  background: #fff;
+  box-shadow: 0 0 15px #0ff;
+}
+
+.login-btn:disabled {
+  background: #333;
+  color: #666;
+  cursor: not-allowed;
+}
+
+/* Championship Leaderboard Styles */
+.championship-panel {
+  flex: 1 1 100%;
+  background: rgba(15, 12, 41, 0.7);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(0, 255, 255, 0.25);
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.1);
+  padding: 30px;
+  position: relative;
+  overflow: hidden;
+}
+
+.championship-panel::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(0, 255, 255, 0.05) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.championship-header {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 25px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 15px;
+}
+
+.championship-header h3 {
+  color: #0ff;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+  margin: 0;
+  font-size: 1.8rem;
+  border: none;
+  padding: 0;
+}
+
+.championship-subtitle {
+  color: #888;
+  font-size: 1rem;
+  margin: 5px 0 0 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  position: relative;
+  z-index: 1;
+}
+
+.championship-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1.1rem;
+}
+
+.championship-table th {
+  padding: 15px 12px;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+  color: #a55eea;
+  border-bottom: 2px solid rgba(165, 94, 234, 0.3);
+  font-weight: 700;
+  text-align: center;
+}
+
+.championship-table th.col-player {
+  text-align: left;
+}
+
+.championship-table th.col-rank {
+  text-align: center;
+}
+
+.championship-table td {
+  padding: 16px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.3s;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.championship-table td.col-player {
+  text-align: left;
+}
+
+.championship-table tbody tr {
+  transition: background 0.3s;
+}
+
+.championship-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.championship-table tbody tr.current-player {
+  background: rgba(0, 255, 255, 0.08);
+  box-shadow: inset 0 0 15px rgba(0, 255, 255, 0.15);
+}
+
+.championship-table tbody tr.current-player td {
+  border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+  border-top: 1px solid rgba(0, 255, 255, 0.1);
+}
+
+.rank-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  font-weight: bold;
+  border-radius: 50%;
+  font-size: 1.1rem;
+}
+
+.rank-badge.rank-1 {
+  background: radial-gradient(circle, #f1c40f, #d35400);
+  box-shadow: 0 0 10px rgba(241, 196, 15, 0.5);
+  font-size: 1.3rem;
+}
+
+.rank-badge.rank-2 {
+  background: radial-gradient(circle, #bdc3c7, #7f8c8d);
+  box-shadow: 0 0 10px rgba(189, 195, 199, 0.5);
+  font-size: 1.3rem;
+}
+
+.rank-badge.rank-3 {
+  background: radial-gradient(circle, #e67e22, #d35400);
+  box-shadow: 0 0 10px rgba(230, 126, 34, 0.5);
+  font-size: 1.3rem;
+}
+
+.player-name {
+  font-weight: bold;
+  color: #fff;
+}
+
+.you-badge {
+  background: #0ff;
+  color: #000;
+  font-size: 0.75rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 800;
+  margin-left: 10px;
+  box-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
+  letter-spacing: 0.5px;
+}
+
+.score-value {
+  color: #ecf0f1;
+  font-weight: 500;
+}
+
+.score-value.zero-score {
+  opacity: 0.3;
+  color: #7f8c8d;
+}
+
+.total-value {
+  color: #2ecc71;
+  font-weight: 800;
+  text-shadow: 0 0 8px rgba(46, 204, 113, 0.4);
+  font-size: 1.2rem;
+}
+
+.empty-table-state {
+  color: #7f8c8d;
+  font-style: italic;
+  padding: 30px !important;
 }

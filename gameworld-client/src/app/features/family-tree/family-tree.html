@@ -13,6 +13,16 @@
         🎉 Incredible! You've unlocked all generations! 🎉
       </div>
     }
+
+    <div class="submit-section" style="margin-top: 15px; display: flex; gap: 15px; justify-content: center; align-items: center; flex-wrap: wrap;">
+      <button class="add-btn" (click)="submitScore()" [disabled]="isSubmitting">
+        {{ isSubmitting ? 'Submitting...' : 'Submit Score to Leaderboard' }}
+      </button>
+      <a routerLink="/home" class="add-btn" style="background: #2ecc71; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; font-weight: bold; padding: 5px 12px;">
+        RETURN TO HUB
+      </a>
+      <div *ngIf="submitMessage" style="color: #1dd1a1; margin-top: 5px; width: 100%; text-align: center;">{{ submitMessage }}</div>
+    </div>
   </div>
 
   <!-- Recursive template for the tree -->
